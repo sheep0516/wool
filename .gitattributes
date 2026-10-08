@@ -1,0 +1,16 @@
+# 统一换行：仓库里统一用 LF，检出到 Windows 时也保持 LF，
+# 避免 Actions（Linux）与本地（Windows）之间产生无意义的整文件差异。
+* text=auto eol=lf
+
+# 图片等二进制文件不做换行转换
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+
+# Windows 批处理必须是 CRLF，否则可能出问题
+*.bat text eol=crlf

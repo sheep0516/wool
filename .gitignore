@@ -1,0 +1,14 @@
+# 依赖与构建产物：不进版本库
+node_modules/
+dist/
+
+# 本地预览 / 工具脚本
+.preview-static.js
+
+# 编辑器与系统
+.DS_Store
+Thumbs.db
+*.log
+
+# 本地工作产物（截图、验证脚本等）
+.workbuddy/

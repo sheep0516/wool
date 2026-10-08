@@ -1,0 +1,83 @@
+<%- include('partials/head', { site: site, page: page, pageTitle: pageTitle, lib: lib }) %>
+<%# 搜索页有两种跑法：
+      · 本地（node server.js）—— 服务端已经算好 total / groups，下面直接渲染出来；
+      · 静态（GitHub Pages）—— 没有后端，页面先吐一张空壳，由 public/search.js
+        读 search-index.json、拿 URL 上的 ?q= 在前端算，结果写进 #searchResults。
+
+     两边的差异只有两处，都用 isStatic 分支隔开，保证本地输出与从前一致：
+       ① 结果区外面那层 <div id="searchResults">（本地不需要，静态站给 JS 当挂载点）
+       ② 页尾的索引脚本 + search.js（只有静态站才输出）
+     下面的 var 紧跟注释写在同一行，避免多出一个空行影响本地页面字节。%><% var isStatic = (typeof static !== 'undefined' && static); %>
+
+<div class="search-wrap">
+  <header class="search-head">
+    <h1 class="search-title">搜索</h1>
+    <p class="search-sub">多个关键词用空格隔开，结果是「都包含」这些词的页面。</p>
+
+    <form class="search-form" action="<%= base %>/search" method="get" role="search">
+      <svg class="search-form-ico" viewBox="0 0 16 16" aria-hidden="true">
+        <circle cx="7" cy="7" r="4.6"/><path d="M10.4 10.4 14 14"/>
+      </svg>
+      <input class="search-input" type="search" name="q" value="<%= query %>"
+             placeholder="搜索标题、正文、章节名…" aria-label="搜索站内文章"
+             autocomplete="off" autofocus>
+      <button class="search-submit" type="submit">搜索</button>
+    </form>
+<%# 本地：只有带查询词才输出统计条；静态站：恒输出，由 search.js 填内容 %>
+    <% if (query) { %>
+      <p class="search-stat"<% if (isStatic) { %> id="searchStat"<% } %>>
+        <% if (total) { %>
+          「<strong><%= query %></strong>」共找到 <strong><%= total %></strong> 篇<% if (groups.length > 1) { %>，分布在 <%= groups.length %> 个知识库<% } %>
+        <% } else { %>
+          没有找到和「<strong><%= query %></strong>」相关的内容
+        <% } %>
+      </p>
+    <% } else if (isStatic) { %>
+      <p class="search-stat" id="searchStat"></p>
+    <% } %>
+  </header>
+
+<% if (isStatic) { %><div id="searchResults"><% } %>
+  <% if (!query) { %>
+    <div class="search-empty">
+      <p>输入关键词开始搜索。</p>
+      <p class="muted">标题命中的结果会排在前面，正文里的命中位置会摘出来并高亮。</p>
+    </div>
+  <% } else if (!total) { %>
+    <div class="search-empty">
+      <p>换个说法试试：</p>
+      <p class="muted">关键词之间是「都要出现」的关系，拆得太细容易搜不到 —— 少写几个词命中率更高；也可以试试更短的词根。</p>
+    </div>
+  <% } %>
+
+  <% groups.forEach(function (g) { %>
+    <section class="search-group">
+      <h2 class="search-group-title">
+        <span class="search-group-icon" style="background:<%= g.kb.color %>"><%= g.kb.initial %></span>
+        <a href="<%= g.kb.url %>"><%= g.kb.title %></a>
+        <span class="search-group-count"><%= g.hits.length %> 篇</span>
+      </h2>
+      <ul class="search-list">
+        <% g.hits.forEach(function (h) { %>
+          <li class="search-item">
+            <a class="search-item-title" href="<%= h.url %>"><%- h.titleHtml %></a>
+            <p class="search-item-snippet"><%- h.snippetHtml %></p>
+            <span class="search-item-path"><%= g.kb.title %><% if (h.chapterName) { %> · <%= h.chapterName %><% } %><% if (h.num) { %> · <%= h.num %><% } %></span>
+          </li>
+        <% }); %>
+      </ul>
+    </section>
+  <% }); %>
+<% if (isStatic) { %></div><% } %>
+</div>
+<% if (isStatic) { %>
+<%# 静态站：把索引地址交给前端脚本，由它拿 URL 上的 ?q= 算结果 %>
+<script>
+  window.__SEARCH__ = {
+    base: <%- JSON.stringify(base) %>,
+    index: <%- JSON.stringify(base + '/search-index.json') %>
+  };
+</script>
+<script src="<%= base %>/public/search.js"></script>
+<% } %>
+<%- include('partials/foot', { site: site, page: page }) %>

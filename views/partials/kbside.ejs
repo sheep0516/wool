@@ -1,0 +1,78 @@
+<aside class="kbside" id="kbSide">
+  <div class="kbside-head">
+    <div class="kbside-crumb">
+      <a class="crumb-back" href="<%= base %>/">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.6 3.4 5 8l4.6 4.6"/></svg>
+        <span>首页</span>
+      </a>
+      <span class="crumb-sep">/</span>
+      <a class="crumb-link" href="<%= base %>/">全部知识库</a>
+      <span class="crumb-pad"></span>
+      <button class="icon-btn" id="sideToggle" type="button" title="收起目录" aria-label="收起目录">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="3.2" y="4.6" width="17.6" height="14.8" rx="2.4"/>
+          <path d="M9.8 4.6v14.8"/>
+        </svg>
+      </button>
+    </div>
+
+    <h2 class="kbside-title"><%= kb.title %></h2>
+
+    <div class="pbar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="kbPbar">
+      <span class="pbar-in" id="kbPbarIn"></span>
+    </div>
+    <p class="kbside-sub" id="kbPbarText">共 <%= kb.chapterCount %> 章 · <%= kb.articleCount %> 篇</p>
+  </div>
+
+  <div class="line"></div>
+
+  <a class="side-item<%= page === 'kb' ? ' is-active' : '' %>" href="<%= kb.url %>" data-nav-slug="">
+    <svg class="side-book" viewBox="0 0 16 16" aria-hidden="true">
+      <path d="M8 4.1C6.9 2.8 5.2 2.3 3 2.3H1.6v9.4H3c2.2 0 3.9.5 5 1.8 1.1-1.3 2.8-1.8 5-1.8h1.4V2.3H13c-2.2 0-3.9.5-5 1.8Z"/>
+      <path d="M8 4.1v9.4"/>
+    </svg>
+    <span>概述</span>
+  </a>
+
+  <a class="side-item" href="<%= base %>/search">
+    <svg class="side-ico" viewBox="0 0 16 16" aria-hidden="true">
+      <circle cx="7" cy="7" r="4.6"/>
+      <path d="M10.4 10.4 14 14"/>
+    </svg>
+    <span>搜索</span>
+  </a>
+
+  <div class="line"></div>
+
+  <nav class="side-groups" id="kbGroups">
+    <% kb.chapters.forEach(function (ch, ci) { %>
+      <% var opened = !(page === 'article' && article) || (article && article.chapterRoot === ch.dir); %>
+      <div class="side-group<%= opened ? ' is-open' : '' %>" data-group>
+        <button class="side-group-head" type="button" aria-expanded="<%= opened ? 'true' : 'false' %>">
+          <svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.2 6.3 8 10.1l3.8-3.8"/></svg>
+          <span class="side-group-name"><%= ci + 1 %>. <%= ch.name %></span>
+        </button>
+        <div class="side-links">
+          <%# 同 kb.ejs：ch.render 已把「直属文章 / 章内小节」摊平，这里只需顺序输出 %>
+          <% ch.render.forEach(function (g) { %>
+            <% if (g.heading) { %>
+              <div class="side-sub<%= g.depth > 0 ? ' is-deep' : '' %>">
+                <span class="side-sub-no"><%= g.heading.label %></span>
+                <span class="side-sub-name"><%= g.heading.name %></span>
+              </div>
+            <% } %>
+            <% g.items.forEach(function (a) { %>
+              <a class="side-link<%= (page === 'article' && article && article.slug === a.slug) ? ' is-current' : '' %><%= g.heading ? ' is-nested' : '' %>"
+                 href="<%= a.url %>"
+                 data-nav-slug="<%= a.slug %>"
+                 data-group-index="<%= ci %>">
+                <span class="side-no"><%= a.num %></span>
+                <span class="side-text"><%= a.title %></span>
+              </a>
+            <% }); %>
+          <% }); %>
+        </div>
+      </div>
+    <% }); %>
+  </nav>
+</aside>

@@ -1,0 +1,10 @@
+<%- include('partials/head', { site: site, page: page, pageTitle: pageTitle, lib: lib }) %>
+
+<div class="notfound">
+  <p class="notfound-code">404</p>
+  <h1><%= message %></h1>
+  <p class="muted">地址可能拼错了，或者对应的文件被移动、改过名。</p>
+  <a class="btn-open" href="<%= base %>/">回到首页<span class="btn-arrow">→</span></a>
+</div>
+
+<%- include('partials/foot', { site: site, page: page }) %>

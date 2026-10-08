@@ -1,0 +1,22 @@
+{
+  "name": "personal-knowledge-base",
+  "version": "1.0.0",
+  "private": true,
+  "description": "羊毛设计稿：本地读 Markdown 实时预览，可导出静态站发布到 GitHub Pages",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node tools/check-content.js",
+    "build": "node tools/build-static.js --base /wool",
+    "preview": "node .preview-static.js"
+  },
+  "dependencies": {
+    "chokidar": "^3.6.0",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "gray-matter": "^4.0.3",
+    "highlight.js": "^11.10.0",
+    "markdown-it": "^14.1.0",
+    "markdown-it-task-lists": "^2.1.1"
+  }
+}

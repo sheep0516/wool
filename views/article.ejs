@@ -1,0 +1,55 @@
+<%- include('partials/head', { site: site, page: page, pageTitle: pageTitle, lib: lib, kb: kb, article: article }) %>
+
+<div class="article-layout">
+  <article class="article-main">
+    <div class="article-card">
+      <header class="article-header">
+        <p class="article-kicker"><%= chapter.name %> · 第 <%= article.index %> 篇</p>
+        <h1 class="article-title"><%= article.title %></h1>
+        <div class="article-meta">
+          <span>约 <%= article.minutes %> 分钟读完</span>
+          <span class="dot-sep">·</span>
+          <span><%= article.words %> 字</span>
+        </div>
+      </header>
+
+      <div class="article-body">
+        <%- html %>
+      </div>
+    </div>
+
+    <nav class="article-nav">
+      <% if (article.prev) { %>
+        <a class="nav-prev" href="<%= article.prev.url %>">
+          <span class="nav-label">← 上一篇</span>
+          <span class="nav-title"><%= article.prev.title %></span>
+        </a>
+      <% } else { %><span class="nav-empty"></span><% } %>
+      <% if (article.next) { %>
+        <a class="nav-next" href="<%= article.next.url %>">
+          <span class="nav-label">下一篇 →</span>
+          <span class="nav-title"><%= article.next.title %></span>
+        </a>
+      <% } %>
+    </nav>
+  </article>
+
+  <% if (toc && toc.length) { %>
+    <aside class="toc-side">
+      <div class="toc-inner">
+        <p class="toc-title">本篇目录</p>
+        <ul class="toc-list">
+          <% toc.forEach(function (item) { %>
+            <li class="toc-item toc-level-<%= item.level %>">
+              <a href="#<%= item.id %>"><%= item.text %></a>
+            </li>
+          <% }); %>
+        </ul>
+      </div>
+    </aside>
+  <% } %>
+</div>
+
+<script src="<%= base %>/public/kb.js"></script>
+<script src="<%= base %>/public/article.js"></script>
+<%- include('partials/foot', { site: site, page: page }) %>

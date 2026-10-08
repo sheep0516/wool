@@ -1,0 +1,73 @@
+<%- include('partials/head', { site: site, page: page, pageTitle: pageTitle, lib: lib, kb: kb }) %>
+
+<section class="kb-cover">
+  <div class="cover-banner" style="--kb: <%= kb.color %>">
+    <span class="cover-mark" aria-hidden="true"><%= kb.initial %></span>
+    <span class="cover-ribbon">
+      <span class="rb-num" id="kbPctTop">0</span><span class="rb-pct">%</span>
+    </span>
+  </div>
+
+  <div class="cover-row">
+    <span class="cover-icon" style="background: <%= kb.color %>"><%= kb.initial %></span>
+    <div class="cover-text">
+      <h1 class="cover-title"><%= kb.title %></h1>
+      <div class="cover-tags">
+        <% if (kb.updatedDate) { %><span class="chip">最后更新于 <%= kb.updatedDate %></span><% } %>
+        <span class="chip">#<%= kb.category %></span>
+      </div>
+    </div>
+    <% if (kb.firstArticle) { %>
+      <a class="btn-study" href="<%= kb.firstArticle.url %>">
+        <svg viewBox="0 0 18 17" aria-hidden="true">
+          <path d="M8.9 3.4C7.6 2.2 5.7 1.7 3.4 1.7H1.2v11.1h2.2c2.3 0 4.2.5 5.5 1.7 1.3-1.2 3.2-1.7 5.5-1.7h2.2V1.7h-2.2c-2.3 0-4.2.5-5.5 1.7Z"/>
+          <path d="M8.9 3.4v11.1"/>
+        </svg>
+        <span>开始学习</span>
+      </a>
+    <% } %>
+  </div>
+
+  <div class="line"></div>
+
+  <div class="cover-stats">
+    <div class="cstat"><span class="cnum"><%= kb.articleCount %></span><span class="clbl">文章数</span></div>
+    <div class="cstat"><span class="cnum"><%= kb.totalWordsText %></span><span class="clbl">总字数</span></div>
+    <div class="cstat"><span class="cnum"><%= kb.chapterCount %></span><span class="clbl">章节数</span></div>
+    <div class="cstat"><span class="cnum"><%= kb.totalImages %></span><span class="clbl">配图数</span></div>
+    <div class="cstat"><span class="cnum"><%= kb.totalMinutes %></span><span class="clbl">总分钟</span></div>
+  </div>
+</section>
+
+<section class="kb-overview">
+  <h2 class="ov-title">知识库概述</h2>
+  <% if (kb.overviewHtml) { %>
+    <div class="ov-body summary"><%- kb.overviewHtml %></div>
+  <% } else { %>
+    <p class="ov-body muted">在 <code>content/<%= kb.slug %>/_meta.md</code> 里写一段简介，这里就会显示。</p>
+  <% } %>
+</section>
+
+<% kb.chapters.forEach(function (ch, ci) { %>
+  <div class="sec-head">
+    <h2 class="sec-title"><%= ch.name %></h2>
+    <p class="sec-meta" data-chapter-meta="<%= ci %>">已读 0/<%= ch.articles.length %></p>
+  </div>
+  <%# 概览页不再单列「章内小节」标题：ch.articles 是本章摊平后的全部文章（含小节里的），
+     一张网格从头排到尾；层级信息由卡片角标上的 2.4.1 这种编号承载。 %>
+  <div class="art-grid">
+    <% ch.articles.forEach(function (a) { %>
+      <a class="art-card" href="<%= a.url %>" data-article-slug="<%= a.slug %>">
+        <span class="art-title"><%= a.title %></span>
+        <span class="art-foot">
+          <span class="art-excerpt"><%= a.excerpt %></span>
+          <%# 缩略图固定用「章节.小节.篇序」序号占位，不再截取文章正文里的图片 %>
+          <span class="art-thumb art-thumb-plain"><span><%= a.num %></span></span>
+        </span>
+      </a>
+    <% }); %>
+  </div>
+<% }); %>
+
+<script src="<%= base %>/public/kb.js"></script>
+<%- include('partials/foot', { site: site, page: page }) %>

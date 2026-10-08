@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= pageTitle %></title>
+  <link rel="icon" href="<%= base %>/public/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="<%= base %>/public/favicon-32.png">
+  <link rel="stylesheet" href="<%= base %>/public/style.css">
+<% var isKbPage = (page === 'kb' || page === 'article'); %>
+<%# 内页专用：在首帧渲染之前定下「侧栏是收起还是展开」。
+    整页切换文章（上一篇 / 下一篇）和刷新都会重新吐一次 HTML，侧栏默认是展开的；
+    若等 body 末尾的 kb.js 跑起来再收起，就会看到「先展开、再滑走」的那一下闪动。
+    ⚠️ 状态只在这一处判定，结论写到 <html data-side-init> 上，public/kb.js 直接读结论，
+    不再自己重算一遍 localStorage + 宽度（省掉重复逻辑）。
+
+    规则（窄屏与宽屏分开，别改回「存过的值一律优先」）：
+    · 窄屏（≤960px，与 style.css 里侧栏变浮层的断点一致）→ **一律收起，不看记忆值**。
+      窄屏侧栏是 fixed 的全屏浮层（z-index:90），展开会直接盖住正文，所以进入任何
+      知识库页面都得是收起的（见 public/kb.js 的 setCollapsed，窄屏也不写盘）。
+    · 宽屏 → 用记忆值：存过就按存的来，没存过默认展开。%>
+<% if (isKbPage) { %>
+  <script>
+    (function () {
+      var narrow = window.innerWidth <= 960;
+      var collapsed;
+      try {
+        var v = localStorage.getItem('kb:side:collapsed');
+        collapsed = narrow ? true : v === '1';
+      } catch (e) {
+        /* 隐私模式下读不到 localStorage：窄屏收起，宽屏展开。与 kb.js 兜底一致 */
+        collapsed = narrow;
+      }
+      var html = document.documentElement;
+      html.setAttribute('data-side-init', collapsed ? '1' : '0');
+      if (collapsed) html.classList.add('side-collapsed');
+    })();
+  </script>
+<% } %>
+</head>
+<% var navLib = (typeof lib !== 'undefined' && lib) ? lib : { groups: [], stats: null }; %>
+<body class="page-<%= page %>">
+
+<% if (!isKbPage) { %>
+
+<header class="site-header">
+  <div class="shell header-inner">
+    <a class="brand" href="<%= base %>/">
+      <span class="brand-mark brand-mark--transparent"><img src="<%= base %>/public/logo/icon-32-t.png" srcset="<%= base %>/public/logo/icon-32-t.png 1x, <%= base %>/public/logo/icon-48-t.png 2x" alt="" width="32" height="32"></span>
+      <span class="brand-text"><%= site.title %></span>
+    </a>
+    <nav class="site-nav">
+      <a href="<%= base %>/" class="<%= page === 'home' ? 'is-active' : '' %>">首页</a>
+      <%# 这里放的是「知识库分类」，点击滚到主页对应的分组（id 由 server.js 的
+          categoryAnchor() 生成，与 home.ejs 的 section id 同源）。
+          不要改回「每个知识库一个链接」—— 知识库一多就排不下。 %>
+      <% (navLib.groups || []).forEach(function (g) { %>
+        <a href="<%= base %>/#<%= g.id %>"><%= g.category %></a>
+      <% }); %>
+    </nav>
+    <%# 搜索入口：普通 GET 表单，不依赖 JS。窄屏隐藏（搜索页本身有输入框） %>
+    <form class="header-search" action="<%= base %>/search" method="get" role="search">
+      <svg class="header-search-ico" viewBox="0 0 16 16" aria-hidden="true">
+        <circle cx="7" cy="7" r="4.6"/><path d="M10.4 10.4 14 14"/>
+      </svg>
+      <input class="header-search-input" type="search" name="q"
+             value="<%= (typeof query !== 'undefined' && query) ? query : '' %>"
+             placeholder="搜索" aria-label="搜索站内文章" autocomplete="off">
+    </form>
+    <% if (navLib.stats) { %>
+      <span class="header-count"><%= navLib.stats.kbs %> 个知识库 · <%= navLib.stats.articles %> 篇</span>
+    <% } %>
+  </div>
+</header>
+
+<main class="shell">
+
+<% } else { %>
+
+<div class="kb-shell" id="kbShell"
+     data-kb="<%= kb.slug %>"
+     data-article="<%= (typeof article !== 'undefined' && article) ? article.slug : '' %>">
+  <%- include('kbside', {
+        site: site,
+        page: page,
+        kb: kb,
+        article: (typeof article !== 'undefined' ? article : null)
+      }) %>
+
+  <%# 窄屏浮动「目录 / 进度」抽屉。
+      放在这里（而不是 foot.ejs）是因为 public/kb.js 在正文之后、foot 之前就执行了，
+      标记必须先于脚本存在，kb.js 才拿得到这些节点。
+      宽屏整个用不到（CSS 里 .toc-float 是 display:none）；
+      目录列表只在当前页有 toc（即文章页）时输出，概览页就只有进度。
+      这里复用 .toc-list 的类，article.js 会把抽屉里和右侧的两份当前小节一起高亮。 %>
+  <div class="toc-float" id="tocFloat">
+    <button class="toc-float-btn" id="tocFloatBtn" type="button"
+            aria-expanded="false" aria-controls="tocFloatPanel">
+      <svg viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M2.4 4h1.6"/><path d="M2.4 8h1.6"/><path d="M2.4 12h1.6"/>
+        <path d="M6.6 4h7"/><path d="M6.6 8h7"/><path d="M6.6 12h7"/>
+      </svg>
+      <span class="toc-float-label"><%= (typeof toc !== 'undefined' && toc && toc.length) ? '目录' : '进度' %></span>
+      <span class="toc-float-pct" id="tocFloatPct">0%</span>
+    </button>
+
+    <div class="toc-float-scrim" id="tocFloatScrim"></div>
+
+    <div class="toc-float-panel" id="tocFloatPanel" aria-hidden="true">
+      <div class="toc-float-head">
+        <span class="toc-float-head-t">阅读进度</span>
+        <span class="toc-float-head-v" id="tocFloatProgress">—</span>
+      </div>
+      <div class="pbar"><span class="pbar-in" id="tocFloatBarIn"></span></div>
+
+      <% if (typeof toc !== 'undefined' && toc && toc.length) { %>
+        <p class="toc-float-t">本篇目录</p>
+        <div class="toc-float-list">
+          <ul class="toc-list">
+            <% toc.forEach(function (item) { %>
+              <li class="toc-item toc-level-<%= item.level %>">
+                <a href="#<%= item.id %>"><%= item.text %></a>
+              </li>
+            <% }); %>
+          </ul>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <main class="kb-main">
+    <div class="kb-col<%= page === 'article' ? ' kb-col-article' : '' %>">
+      <button class="side-reopen" id="sideReopen" type="button" title="展开目录" aria-label="展开目录">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="3.2" y="4.6" width="17.6" height="14.8" rx="2.4"/>
+          <path d="M13.4 4.6v14.8"/>
+          <path d="M7.6 9.6 10 12l-2.4 2.4"/>
+        </svg>
+      </button>
+
+<% } %>

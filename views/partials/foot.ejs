@@ -1,0 +1,31 @@
+<% var isKbPage = (page === 'kb' || page === 'article'); %>
+
+<% if (isKbPage) { %>
+
+      <footer class="site-footer kb-footer">
+        <span><%= site.title %><% if (site.subtitle) { %> · <%= site.subtitle %><% } %></span>
+        <span class="footer-hint">本地运行 · 内容来自 content/ 目录</span>
+      </footer>
+
+    </div><!-- /.kb-col -->
+  </main>
+</div><!-- /.kb-shell -->
+
+<% } else { %>
+
+</main>
+
+<footer class="site-footer">
+  <div class="shell">
+    <span><%= site.title %><% if (site.subtitle) { %> · <%= site.subtitle %><% } %></span>
+    <span class="footer-hint">本地运行 · 内容来自 content/ 目录</span>
+  </div>
+</footer>
+
+<% } %>
+
+<script src="<%= base %>/public/code.js"></script>
+<%# 实时刷新脚本只在本地服务下输出：静态站没有 /events 通道，留着只是多一次失败请求。
+    build-static.js 导出时把 livereload 传成 false。%><% if (typeof livereload === 'undefined' || livereload) { %><script src="<%= base %>/public/livereload.js"></script>
+<% } %></body>
+</html>
