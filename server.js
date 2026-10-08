@@ -495,7 +495,7 @@ function parseArticle(kbSlug, chapterDir, fileName) {
       }
     })(),
     order: data.order != null ? Number(data.order) : null,
-    url: BASE + '/kb/' + encodeURIComponent(kbSlug) + '/' + encodeURIComponent(slug)
+    url: BASE + '/kb/' + encodeURIComponent(kbSlug) + '/' + encodeURIComponent(slug) + '/'
   };
 }
 
@@ -604,7 +604,7 @@ function loadKnowledgeBase(kbDir) {
     articles: flat,
     chapterCount: chapters.length,
     articleCount: flat.length,
-    url: BASE + '/kb/' + encodeURIComponent(kbDir)
+    url: BASE + '/kb/' + encodeURIComponent(kbDir) + '/'
   };
 }
 
