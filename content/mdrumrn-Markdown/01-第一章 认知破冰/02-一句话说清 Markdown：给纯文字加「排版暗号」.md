@@ -47,7 +47,7 @@
 
 左边那一列，不用去背。反过来看更划算：右边那些整整齐齐的效果，以前得打开编辑软件点半天按钮，现在在你本来就在写字的地方，敲几个符号就有了。
 
-![img](https://secure2.wostatic.cn/static/f1anX2HeXShnbaNsBHm7xx/image.png?auth_key=1791454101-uMqi3L2KJETwa1fmGemhZb-0-97595b7daa37585650aa6fc3236a414a)
+![img](https://cdn.jsdelivr.net/gh/sheep0516/img-bed@main/img/2026/10/1d111c73b747187d1a0a21be45e88455.png)
 
 ## 为什么用符号，而不是像 Word 那样点按钮
 
@@ -79,7 +79,7 @@
 
 还是这张图，左边是你写的源文件，经过软件渲染，右边是你看到的预览。
 
-![img](https://secure2.wostatic.cn/static/oA88gFA8h8Z8UV4xuJYHTJ/image.png?auth_key=1791454101-6beuSCpLNtcFcHhYZ3MtWe-0-130f0dee9d6f64b6c0fd5317137dcd3d)
+![img](https://cdn.jsdelivr.net/gh/sheep0516/img-bed@main/img/2026/10/1d111c73b747187d1a0a21be45e88455.png)
 
 ## 一个反直觉的点：它管不住字号和字体
 
@@ -111,7 +111,7 @@ https://www.processon.com/markdown
 * 第一条：今天学到**加粗**了
 ```
 
-![img](https://secure2.wostatic.cn/static/7PAZogZtHHL8Vz5CSSfA47/image.png?auth_key=1791454101-9uHM91VSa6W2ENJe1ohTL3-0-1147a8a9487aa85beff429285a514e3e)
+![img](https://cdn.jsdelivr.net/gh/sheep0516/img-bed@main/img/2026/10/942c6c112e9725d47b92622f0171b0df.png)
 
 ## 最后做个总结
 

@@ -2,7 +2,7 @@
 title: Markdown语言入门
 description: 从"完全不知道 Markdown 是什么"，到"能自己写出一篇结构清楚、发得出去的文章"，不背语法、不装高手，每读完一篇都能当天用上。
 category: Markdown学习
-order: 2
+order: 1
 ---
 
 面向零基础读者的 Markdown 入门连载。共五章：

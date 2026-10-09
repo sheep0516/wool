@@ -10,11 +10,11 @@
 
 * 让 AI 帮我写的东西，在对话框里看着正常，复制到word里满是 `#`、`-`、`**`。你以为是乱码，还想着一处处去手动删掉，觉得很是麻烦。
 
-  ![img](https://secure2.wostatic.cn/static/nUy6GEFSEChQ9ZY9LsRx7D/image.png?auth_key=1791453981-eaApqtebYd62KLrnXMjbVW-0-cf8d1d5b19a70fec10562c432de98ce0)
+  ![img](https://cdn.jsdelivr.net/gh/sheep0516/img-bed@main/img/2026/10/ed83626261b133ad37dada417cbd5ac9.png)
 
 * 刷到程序员的截图，代码是灰底方框、带彩色高亮。你第一反应是：这得用什么专业软件做？
 
-  ![img](https://secure2.wostatic.cn/static/nyCAj2DcjA8EnjCRubdh5o/image.png?auth_key=1791453981-mHaUpHgrxVEANnkkxHUSA5-0-d7c939014007c8f8c41b7168aa16457f)
+  ![img](https://cdn.jsdelivr.net/gh/sheep0516/img-bed@main/img/2026/10/4d1fa17477c98e463cd02c4eb7c132b1.png)
 
 这两件事看着没关系，其实是同一样东西。
 
