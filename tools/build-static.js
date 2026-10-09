@@ -7,9 +7,15 @@
  * 整套跑一遍，把结果落成文件，Pages 就能像访问普通网站一样访问它。
  *
  * 用法：
- *   node tools/build-static.js
- *   node tools/build-static.js --base /wool     指定子路径（Pages 项目页）
- *   node tools/build-static.js --out dist       指定输出目录
+ *   node tools/build-static.js                   站点在根目录（配了自定义域名 / 用户页）
+ *   node tools/build-static.js --base /wool      站点在子路径（项目页 github.io/<repo>/）
+ *   node tools/build-static.js --out dist        指定输出目录
+ *
+ * ⚠️ --base 必须和「站点实际服务在哪」一致：
+ *      配了自定义域名 → 站点在域名根目录 → base 传空
+ *      默认项目页     → 站点在 /<仓库名>/ → base 传 /<仓库名>
+ *    传错的后果：页面能打开，但所有 CSS/JS/图片 404 —— 只剩裸 HTML，毫无样式。
+ *    线上由 .github/workflows/deploy.yml 读取 configure-pages 的 base_path 自动传入。
  *
  * 产出结构（--base /wool 为例）：
  *   dist/

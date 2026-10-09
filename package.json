@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node server.js",
     "check": "node tools/check-content.js",
-    "build": "node tools/build-static.js --base /wool",
+    "build": "node tools/build-static.js",
     "preview": "node .preview-static.js"
   },
   "dependencies": {

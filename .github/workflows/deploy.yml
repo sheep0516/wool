@@ -36,13 +36,17 @@ jobs:
       - name: 内容体检（有问题就让构建失败，避免发出坏页面）
         run: npm run check
 
-      - name: 静态导出
-        # 仓库名就是访问子路径：https://<用户名>.github.io/wool/
-        # 如果以后改了仓库名，这里跟着改。
-        run: node tools/build-static.js --base /wool
-
+      # 先问 GitHub「这个站点实际服务在哪个路径」，再据此导出。
+      #   配了自定义域名（如 https://example.com/） → base_path 是空串
+      #   默认项目页（https://<用户名>.github.io/wool/） → base_path 是 /wool
+      # ⚠️ 这里写死任何一个，都会在另一种情况下让全站资源 404（页面只剩裸 HTML）。
+      #    所以必须让 configure-pages 先跑，把答案传下去。
       - name: 配置 Pages
+        id: pages
         uses: actions/configure-pages@v5
+
+      - name: 静态导出
+        run: node tools/build-static.js --base "${{ steps.pages.outputs.base_path }}"
 
       - name: 上传产物
         uses: actions/upload-pages-artifact@v3
