@@ -19,6 +19,16 @@
 
   var base = cfg.base || '';
 
+  /* 离线导出（把站点导出成可直接双击打开的一堆 .html）专用。
+     file:// 下目录地址打不开，必须补成 index.html；而索引也得走内联数据，
+     因为 file:// 不允许 fetch 本地文件。
+     托管版没有 cfg.offline 这个字段 → 下面全部走原路径，行为与从前逐字一致。 */
+  function link(u) {
+    if (!cfg.offline) return u;
+    var bare = String(u).split('#')[0].split('?')[0];
+    return /\.[a-z0-9]{2,5}$/i.test(bare) ? u : String(u).replace(/([?#]|$)/, '/index.html$1');
+  }
+
   /* ---------------- 与 server.js 同源的纯函数 ---------------- */
 
   function escapeHtml(s) {
@@ -89,7 +99,7 @@
     var byKb = {};
     entries.forEach(function (a) {
       if (!byKb[a.kb]) {
-        byKb[a.kb] = { kb: { slug: a.kb, title: a.kbTitle, color: a.kbColor, initial: a.kbInitial, url: base + '/kb/' + encodeURIComponent(a.kb) }, hits: [] };
+        byKb[a.kb] = { kb: { slug: a.kb, title: a.kbTitle, color: a.kbColor, initial: a.kbInitial, url: link(base + '/kb/' + encodeURIComponent(a.kb)) }, hits: [] };
         order.push(a.kb);
       }
     });
@@ -115,7 +125,7 @@
       byKb[a.kb].hits.push({
         title: a.title,
         titleHtml: highlightText(a.title, terms),
-        url: a.url,
+        url: link(a.url),
         chapterName: a.chapter,
         num: a.num,
         snippetHtml: highlightText(makeSnippet(a.text || '', terms, a.excerpt), terms),
@@ -210,7 +220,8 @@
       var input = document.querySelector('.search-input');
       var q = input ? input.value.trim() : '';
       var url = base + '/search/' + (q ? '?q=' + encodeURIComponent(q) : '');
-      if (history.pushState) history.pushState(null, '', url);
+      // file:// 下 pushState 可能被拒（源是 null），失败就只算结果、不改地址栏
+      try { if (history.pushState) history.pushState(null, '', url); } catch (err) { /* 忽略 */ }
       if (loaded) run(q, loaded);
     });
   }
@@ -228,11 +239,16 @@
     }
   }
 
-  fetch(cfg.index, { cache: 'no-cache' })
-    .then(function (r) {
-      if (!r.ok) throw new Error('索引读取失败 ' + r.status);
-      return r.json();
-    })
+  // 索引来源：离线版读页面内联的 search-index.js（file:// 不能 fetch 本地文件），
+  // 托管版照旧读 search-index.json —— cfg.offline 为假时这段完全走老路
+  var indexData = (cfg.offline && window.__PKB_SEARCH_INDEX__)
+    ? Promise.resolve(window.__PKB_SEARCH_INDEX__)
+    : fetch(cfg.index, { cache: 'no-cache' }).then(function (r) {
+        if (!r.ok) throw new Error('索引读取失败 ' + r.status);
+        return r.json();
+      });
+
+  indexData
     .then(function (entries) {
       loaded = entries;
       run(queryFromUrl(), entries);

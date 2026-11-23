@@ -8,6 +8,7 @@
     "start": "node server.js",
     "check": "node tools/check-content.js",
     "build": "node tools/build-static.js",
+    "build:offline": "node tools/build-offline.js",
     "preview": "node .preview-static.js"
   },
   "dependencies": {
