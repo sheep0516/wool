@@ -3,5 +3,9 @@
   "subtitle": "把学到的东西，整理成能随时翻的东西",
   "banner": {
     "image": "/public/banner.jpg"
+  },
+  "analytics": {
+    "headHtml": "<script>var _hmt = _hmt || [];(function() {var hm = document.createElement('script');hm.src = 'https://hm.baidu.com/hm.js?8485ebe9aa40070c6bccfb60db7647a0';var s = document.getElementsByTagName('script')[0];s.parentNode.insertBefore(hm, s);})();</script>",
+    "hosts": []
   }
 }

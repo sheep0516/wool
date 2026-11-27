@@ -37,6 +37,32 @@
     })();
   </script>
 <% } %>
+<%# 内页埋点辅助：把「当前页面属于哪个知识库 / 哪篇文章」早早在 head 里暴露出来，
+    统计脚本的自定义事件可以直接用（页面 URL 本身就是 /kb/<库>/…，报表按前缀分组也能看）。 %>
+<% if (isKbPage) { %>
+  <script>window.__PKB_META__ = <%- JSON.stringify({
+        page: page,
+        kb: kb.slug,
+        kbTitle: kb.title,
+        article: (typeof article !== 'undefined' && article) ? article.slug : ''
+      }) %>;</script>
+<% } %>
+<%# 埋点/统计（可选）：site.config.json 里 analytics.headHtml 配了内容才输出。
+    · localhost / 127.0.0.1 一律不注入 —— 自己本地访问不污染线上数据；
+    · analytics.hosts 配了白名单则只在这些域名注入（留空 = 全部线上域名都注入）。
+    注入方式用 createContextualFragment：服务商给的那段代码里的 <script> 会照常执行。 %>
+<% if (site.analytics && site.analytics.headHtml) { %>
+  <script>
+    (function () {
+      var h = location.hostname;
+      if (!h || h === 'localhost' || h === '127.0.0.1') return;
+      var allow = <%- JSON.stringify(site.analytics.hosts || []) %>;
+      if (allow.length && allow.indexOf(h) === -1) return;
+      var raw = <%- JSON.stringify(String(site.analytics.headHtml)).replace(/<\//g, '<\\/') %>;
+      document.head.appendChild(document.createRange().createContextualFragment(raw));
+    })();
+  </script>
+<% } %>
 </head>
 <% var navLib = (typeof lib !== 'undefined' && lib) ? lib : { groups: [], stats: null }; %>
 <body class="page-<%= page %>">
